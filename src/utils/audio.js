@@ -82,7 +82,7 @@ export function playMusic() {
     if (musicEl && !musicEl.paused) return musicEl
 
     if (!musicEl) {
-        musicEl = new Audio('/happy-new-year.mp3')
+        musicEl = new Audio(import.meta.env.BASE_URL + 'happy-new-year.mp3')
         musicEl.loop = true
         musicEl.volume = 0.5
     }
