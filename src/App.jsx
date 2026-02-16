@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Scene from './components/Scene'
 import Overlay from './components/Overlay'
 import { unlockAudio, playMusic, stopMusic } from './utils/audio'
@@ -6,10 +6,21 @@ import { unlockAudio, playMusic, stopMusic } from './utils/audio'
 const TARGET = new Date('2026-02-17T00:00:00+07:00').getTime()
 
 export default function App() {
-  const [phase, setPhase] = useState(() => (Date.now() >= TARGET ? 'celebration' : 'countdown'))
+  const [phase, setPhase] = useState(() => {
+    const isPreview = new URLSearchParams(window.location.search).get('preview') === 'true'
+    const alwaysCelebrate = import.meta.env.VITE_ALWAYS_CELEBRATE === 'true'
+    return isPreview || alwaysCelebrate || Date.now() >= TARGET ? 'celebration' : 'countdown'
+  })
   const [audioReady, setAudioReady] = useState(false)
-  const [previewing, setPreviewing] = useState(false)
-  const [showPreviewBtn, setShowPreviewBtn] = useState(true)
+  const [previewing, setPreviewing] = useState(() => new URLSearchParams(window.location.search).get('preview') === 'true')
+  const [showPreviewBtn, setShowPreviewBtn] = useState(() => import.meta.env.VITE_SHOW_PREVIEW !== 'false')
+
+  // Auto-play music when engaged in celebration
+  useEffect(() => {
+    if (phase === 'celebration' && audioReady) {
+      try { playMusic() } catch (e) { /* ignore */ }
+    }
+  }, [phase, audioReady])
 
   const ensureAudio = useCallback(() => {
     if (!audioReady) {

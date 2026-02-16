@@ -58,7 +58,7 @@ export default function Overlay({ phase, onCountdownComplete, audioReady, onUser
                 <Countdown onComplete={onCountdownComplete} audioReady={audioReady} />
             )}
 
-            {phase === 'countdown' && !audioReady && (
+            {!audioReady && (
                 <div className="audio-hint">🔊 Nhấp vào để bật âm thanh</div>
             )}
             {phase === 'countdown' && audioReady && (
